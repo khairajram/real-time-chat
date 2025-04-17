@@ -7,8 +7,6 @@ import { ChatSVG } from './compnent/chatSVG';
 function App() {
 
   const wsRef = useRef<WebSocket  | null>(null);
-  const [socket,setSocket] = useState();
-  const [name,setName] = useState("")
   const [roomNo, setRoomNO] = useState<string>("");
   const [users,setUsers] = useState(0);
 
@@ -83,7 +81,7 @@ function App() {
       {isWSReady
         ? isJoined
           ? <Message roomNo={roomNo} ws={wsRef.current} users={users} message={message} />
-          : <JoinCompo setUsers={setUsers} roomNo={roomNo} setRoomNO={setRoomNO} setJoined={setJoined} setName={setName} ws={wsRef.current} />
+          : <JoinCompo setUsers={setUsers} roomNo={roomNo} setRoomNO={setRoomNO} setJoined={setJoined} ws={wsRef.current} />
         : <div className="text-white p-4">Connecting...</div>}
 
       </div>

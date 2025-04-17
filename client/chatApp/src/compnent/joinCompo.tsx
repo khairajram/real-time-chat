@@ -2,14 +2,13 @@ import { useRef, useState } from "react";
 
 interface JoinCompoProps {
   setJoined: (isJoined : boolean) => void;
-  setName: (name : string) => void;
   ws : WebSocket | null;
   roomNo : string
   setRoomNO : (code : string) => void
   setUsers : (no : number) => void
 }
 
-export function JoinCompo({ setJoined, setName, ws,roomNo, setRoomNO,setUsers }: JoinCompoProps) {
+export function JoinCompo({ setJoined,  ws,roomNo, setRoomNO,setUsers }: JoinCompoProps) {
   const [room, setRoom] = useState(false);
   
   const nameInpRef = useRef<HTMLInputElement>(null);
@@ -30,7 +29,6 @@ export function JoinCompo({ setJoined, setName, ws,roomNo, setRoomNO,setUsers }:
       return;
     }
 
-    setName(name);
 
     if (!ws) {
       console.error("WebSocket is not connected.");
