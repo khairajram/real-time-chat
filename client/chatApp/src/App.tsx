@@ -1,92 +1,107 @@
-import { useEffect, useRef, useState } from 'react'
-import './App.css'
-import { Message } from './compnent/messageCompo';
-import { JoinCompo } from './compnent/joinCompo';
-import { ChatSVG } from './compnent/chatSVG';
+import { useRef, useState } from "react";
 
-function App() {
-
-  const wsRef = useRef<WebSocket  | null>(null);
-  const [roomNo, setRoomNO] = useState<string>("");
-  const [users,setUsers] = useState(0);
-
-  interface messageType {
-    name : string,
-    message : string
-  }
-
-  const [message,setMessages] = useState<messageType[] | []>([{
-    name : "ram",
-    message : "hii there"
-    },
-    {
-      name : "raghav",
-      message : "hello"
-    }]);
-  const [isJoined,setJoined] = useState(false);
-  const [isWSReady, setWSReady] = useState(false);
-  
-
-  useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8080");
-    wsRef.current = ws;
-    setWSReady(true)
-
-
-  
-    ws.onmessage = (event) => {
-      alert(event.data)
-      console.log("Raw message:", event.data)
-      try {
-        const data = JSON.parse(event.data);
-        console.log(data);
-        if (data.type === "chat") {
-          console.log("Incoming chat:", data); 
-          setMessages(m => [...m, { 
-            name: data.name, 
-            message: data.message 
-          }]);
-        } 
-        else if (data.type === "system") {
-          setUsers(data.users); 
-        }
-    
-      } catch (error) {
-        console.error("Failed to parse WebSocket message:", error);
-      }
-    };
-    
-
-  return () => {
-      if(wsRef.current)
-        wsRef.current.close()
-    }
-  },[])
-
-
-
-  return (
-    <div className='min-h-screen bg-black flex items-center justify-center p-4 font-mono'>
-      <div className="w-full max-w-md bg-[#111]  text-white rounded-2xl border border-[#262626] p-6 shadow-lg flex flex-col">
-      <div className="text-center flex flex-col items-center gap-2">
-        <div className='flex items-center gap-2'>
-          <ChatSVG  />
-          <h1 className="text-2xl font-bold">Real-Time Chat</h1>
-        </div>
-        <p className="text-sm text-gray-400 max-w-xs">
-          Temporary room expires when all users leave
-        </p>
-      </div>
-
-      {isWSReady
-        ? isJoined
-          ? <Message roomNo={roomNo} ws={wsRef.current} users={users} message={message} />
-          : <JoinCompo setUsers={setUsers} roomNo={roomNo} setRoomNO={setRoomNO} setJoined={setJoined} ws={wsRef.current} />
-        : <div className="text-white p-4">Connecting...</div>}
-
-      </div>
-    </div>
-  )
+interface JoinCompoProps {
+  setJoined: (isJoined : boolean) => void;
+  ws : WebSocket | null;
+  roomNo : string
+  setRoomNO : (code : string) => void
+  setUsers : (no : number) => void
 }
 
-export default App
+export function JoinCompo({ setJoined,ws,roomNo, setRoomNO,setUsers }: JoinCompoProps) {
+  const [room, setRoom] = useState(false);
+  
+  const nameInpRef = useRef<HTMLInputElement>(null);
+  const roomCodeRef = useRef<HTMLInputElement>(null);
+
+  function createRoom() {
+    const code = ("0000" + Math.floor(Math.random() * 10000)).slice(-4);
+    setRoomNO(code);
+    setRoom(true);
+  }
+
+  function joinRoom() {
+    const name = nameInpRef.current?.value?.trim();
+    const roomId = roomCodeRef.current?.value?.trim() || roomNo;
+
+    if (!name || !roomId) {
+      alert("Please enter your name and room code.");
+      return;
+    }
+
+
+    if (!ws) {
+      console.error("WebSocket is not connected.");
+      return;
+    }
+
+    
+    ws.send(
+      JSON.stringify({
+        type: "join",
+        payload: {
+          roomId : roomId,
+          name : name
+        },
+      })
+    );
+    
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === "system") {
+        setUsers(data.users); 
+      }
+    }
+
+    
+    setJoined(true);    
+  }
+
+  return (
+    <div className="font-mono">
+      <div className="flex flex-col gap-3 w-full">
+
+        <button
+          onClick={createRoom}
+          className="bg-[#fafafa] text-black w-full rounded-md p-2 mt-2 hover:bg-[#e4e4e4] transition cursor-pointer"
+        >
+          Create New Room
+        </button>
+
+        <input
+          ref={nameInpRef}
+          className="w-full border border-[#262626] p-2 rounded-md bg-black text-white mt-2"
+          type="text"
+          placeholder="Enter your name"
+        />
+
+        <div className="flex gap-2 w-full">
+          <input
+            ref={roomCodeRef}
+            className="flex-grow border border-[#262626] p-2 rounded-md bg-black text-white"
+            type="text"
+            placeholder="Enter Room Code"
+            defaultValue={roomNo}
+          />
+          <button
+            onClick={joinRoom}
+            className="bg-white text-black px-4 py-2 rounded-md hover:bg-gray-200 transition cursor-pointer"
+          >
+            Join
+          </button>
+        </div>
+
+        {room && (
+          <div className="bg-[#1e1e1e] border border-[#333] rounded-md p-4 flex flex-col items-center justify-center text-center shadow-md w-full mt-2">
+            <p className="text-gray-300 text-sm">Room created! Share this code:</p>
+            <div className="text-2xl font-mono font-semibold text-white bg-[#333] px-4 py-2 rounded-md tracking-wider mt-1">
+              {roomNo}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

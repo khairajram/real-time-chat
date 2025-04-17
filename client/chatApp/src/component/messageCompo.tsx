@@ -10,6 +10,9 @@ export function Message({message,roomNo,users,ws} : {
   ws : WebSocket | null
 }){
 
+  console.log("Rendering messages:", message);
+
+
   
     const inputRef =  useRef<HTMLInputElement>(null);
 
@@ -34,6 +37,7 @@ export function Message({message,roomNo,users,ws} : {
         },
       })
     );
+
 
     if (inputRef.current) {
       inputRef.current.value = "";
