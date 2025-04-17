@@ -9,13 +9,7 @@ export function Message({message,roomNo,users,ws} : {
   roomNo : string;
   ws : WebSocket | null
 }){
-
-  console.log("Rendering messages:", message);
-
-
-  
-    const inputRef =  useRef<HTMLInputElement>(null);
-
+  const inputRef =  useRef<HTMLInputElement>(null);
 
   function sendMessage(){
     if (!ws) {

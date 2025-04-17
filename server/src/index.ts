@@ -16,7 +16,7 @@ wss.on("connection",function(socket){
 
   socket.send(JSON.stringify({
     type: "system-connect",
-    message: "client connected============",
+    message: "server connected",
   }));
 
   socket.on("message", (message) => {
