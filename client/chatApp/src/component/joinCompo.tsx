@@ -5,10 +5,9 @@ interface JoinCompoProps {
   ws : WebSocket | null;
   roomNo : string
   setRoomNO : (code : string) => void
-  setUsers : (no : number) => void
 }
 
-export function JoinCompo({ setJoined,  ws,roomNo, setRoomNO,setUsers }: JoinCompoProps) {
+export function JoinCompo({ setJoined,  ws,roomNo, setRoomNO }: JoinCompoProps) {
   const [room, setRoom] = useState(false);
   
   const nameInpRef = useRef<HTMLInputElement>(null);
@@ -23,6 +22,7 @@ export function JoinCompo({ setJoined,  ws,roomNo, setRoomNO,setUsers }: JoinCom
   function joinRoom() {
     const name = nameInpRef.current?.value?.trim();
     const roomId = roomCodeRef.current?.value?.trim() || roomNo;
+    setRoomNO(roomId);
 
     if (!name || !roomId) {
       alert("Please enter your name and room code.");
@@ -47,13 +47,13 @@ export function JoinCompo({ setJoined,  ws,roomNo, setRoomNO,setUsers }: JoinCom
     );
     
 
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
+    // ws.onmessage = (event) => {
+    //   const data = JSON.parse(event.data);
 
-      if (data.type === "system") {
-        setUsers(data.users); 
-      }
-    }
+    //   if (data.type === "system") {
+    //     setUsers(data.users); 
+    //   }
+    // }
 
     
     setJoined(true);    

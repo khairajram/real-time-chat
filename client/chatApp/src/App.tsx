@@ -15,14 +15,7 @@ function App() {
     message : string
   }
 
-  const [message,setMessages] = useState<messageType[] | []>([{
-    name : "ram",
-    message : "hii there"
-    },
-    {
-      name : "raghav",
-      message : "hello"
-    }]);
+  const [message,setMessages] = useState<messageType[] | []>([]);
     
   const [isJoined,setJoined] = useState(false);
   const [isWSReady, setWSReady] = useState(false);  
@@ -36,20 +29,17 @@ function App() {
     }
 
       ws.onmessage = (event) => {
-      // alert(`${event.data} -------`);
-      // console.log("Raw message:", event.data)
 
       const data  = JSON.parse(event.data);
 
       if(data.type === "system-connect"){
-        alert(data.message)
         return;
       }
 
       try {
         if (typeof event.data !== "string" || !event.data.startsWith("{")) {
           console.warn("Non-JSON message received:", event.data);
-          alert(`${event.data} -------222222`);
+          alert(`error`);
           return;
         }
 
@@ -61,8 +51,9 @@ function App() {
 
         const data : WSMessage = JSON.parse(event.data);
         console.log(data);
+        console.log()
         if (data.type === "chat") {
-          alert("chat")
+          // alert("chat")
           console.log("Incoming chat:", data); 
           setMessages((m) => [...m, { 
             name: data.name, 
@@ -70,7 +61,8 @@ function App() {
           }]);
         } 
         else if (data.type === "system") {
-          alert("system")
+          // alert("system")
+          console.log("new user connected")
           setUsers(data.users); 
         }
     
@@ -106,7 +98,7 @@ function App() {
       {isWSReady
         ? isJoined
           ? <Message  roomNo={roomNo} ws={socket} users={users} message={message} />
-          : <JoinCompo setUsers={setUsers} roomNo={roomNo} setRoomNO={setRoomNO} setJoined={setJoined} ws={socket} />
+          : <JoinCompo roomNo={roomNo} setRoomNO={setRoomNO} setJoined={setJoined} ws={socket} />
         : <div className="text-white p-4">Connecting...</div>}
 
       </div>

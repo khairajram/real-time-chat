@@ -45,16 +45,16 @@ wss.on("connection",function(socket){
       const sender = allSockets.find((x) => x.socket === socket);
 
       if (sender) {
-        const { message : string } = parsedMessage.payload;
 
         const outgoing = JSON.stringify({
           type: "chat",
           name: sender.name,
-          message : String,
+          message : parsedMessage.payload.message,
         });
 
         allSockets.forEach((user) => {
           if (user.roomId === sender.roomId) {
+            console.log(outgoing);
             user.socket.send(outgoing);
           }
         });
