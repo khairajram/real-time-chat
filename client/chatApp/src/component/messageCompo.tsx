@@ -19,7 +19,6 @@ export function Message({message,roomNo,users,ws} : {
 
     const messageContent = inputRef.current?.value?.trim();
     if (!messageContent) {
-      alert("Message cannot be empty.");
       return;
     }
     
@@ -32,6 +31,8 @@ export function Message({message,roomNo,users,ws} : {
       })
     );
 
+    inputRef.current?.focus();
+
 
     if (inputRef.current) {
       inputRef.current.value = "";
@@ -39,6 +40,7 @@ export function Message({message,roomNo,users,ws} : {
   }
 
   const messageEndRef = useRef<HTMLDivElement>(null);
+
 
 
   useEffect(() => {
@@ -70,7 +72,12 @@ export function Message({message,roomNo,users,ws} : {
       <div ref={messageEndRef} />
       </div>
       <div className='flex justify-between items-center'>
-        <input ref={inputRef} 
+        <input 
+          ref={inputRef} 
+          onKeyDown={(e) => {
+            if(e.key === "Enter")
+              sendMessage();
+          }}
           className='h-10 w-72 rounded-2xl border-2 border-[#262626] p-2 ' 
           type="text" 
           placeholder='Type your message...'
