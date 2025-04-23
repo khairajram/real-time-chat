@@ -1,6 +1,6 @@
 # 💬 Real-Time Chat App
 
-A sleek and responsive real-time chat application built with **React*, **TypeScript**, **WebSockets**, and **Tailwind CSS**. 
+A sleek and responsive real-time chat application built with **React**, **TypeScript**, **WebSockets**, and **Tailwind CSS**. 
 Supports live messaging between users in the same room.
 
 ## 🚀 Features
