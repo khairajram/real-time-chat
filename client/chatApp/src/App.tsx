@@ -21,7 +21,7 @@ function App() {
   const [isWSReady, setWSReady] = useState(false);  
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8080");
+    const ws = new WebSocket("wss://real-time-chat-e7gn.onrender.com");
     setSocket(ws);
 
     ws.onopen = () => {
